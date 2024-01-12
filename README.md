@@ -41,6 +41,6 @@
 
 <details><summary><b>Project: Flow Diagram</b></summary>
 </br>
-<h4>Flow Diagram</h4>
-<img class="center" alt="flow diagram" src="images_readme/Trade Fare Relational Data Model.jpg"> </img></br></br>
+<h4>Flow Diagram :</h4>
+<img class="center" alt="flow diagram" src="images_readme/Flow_Diagram.jpg"></img></br></br>
 </details>    
