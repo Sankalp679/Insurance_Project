@@ -10,6 +10,22 @@
 | 3. | This will help the company to better understand their customers' needs and tailor their offerings accordingly|
 </details> 
 
+
+<details><summary><b>Tools</b></summary>
+</br>
+
+|    | Technologies Used                                                                                                                                                      |
+|----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1. | Azure Devops for following agile methodologies like sprint planning, sprint grooming, sprint retrospective, and task management |
+| 2. | Azure Data Lake Storage for storage of extracted data|
+| 3. | Azure Key Vault for password management|
+| 4. | Azure Data Factory for data orchestration and data extraction |
+| 5. | Databricks for data processing using the medallion lakehouse architecture and data cleaning|
+| 6. | GitHub for Version Control and CI/CD for Azure Data Factory pipelines and Databricks notebooks|
+
+
+</details>   
+
 <details><summary><b>High Level Details</b></summary>
 </br>
 
@@ -24,7 +40,7 @@
 
 </details> 
 
-<details><summary><b>Project : Additional Information</b></summary>
+<details><summary><b>Additional Information</b></summary>
 </br>
 
 |    | Additional Information                                                                                                                                             |
@@ -39,8 +55,19 @@
 
 </details> 
 
-<details><summary><b>Project: Flow Diagram</b></summary>
+<details><summary><b>Flow Diagram</b></summary>
 </br>
 <h4>Flow Diagram :</h4>
 <img class="center" alt="flow diagram" src="images_readme/Flow_Diagram.jpg"></img></br></br>
 </details>    
+
+<details><summary><b>Architecture Diagram
+</b></summary>
+</br>
+<img class="center" alt="architecture diagram" src="images_readme/Architecture.png"></img></br></br>
+</details>    
+
+<div align="center">
+  <img src="https://forthebadge.com/images/badges/built-with-love.svg" />
+  <img src="https://forthebadge.com/images/badges/built-by-developers.svg" />
+</div>
