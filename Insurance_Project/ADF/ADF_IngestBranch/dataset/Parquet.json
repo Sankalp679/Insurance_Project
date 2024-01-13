@@ -1,0 +1,34 @@
+{
+    "name": "Parquet",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "ADLS",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "filesystem": {
+                "type": "string"
+            },
+            "dir": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "folderPath": {
+                    "value": "@dataset().dir",
+                    "type": "Expression"
+                },
+                "fileSystem": {
+                    "value": "@dataset().filesystem",
+                    "type": "Expression"
+                }
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": []
+    }
+}
