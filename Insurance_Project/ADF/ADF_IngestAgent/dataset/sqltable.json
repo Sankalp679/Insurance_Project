@@ -1,0 +1,38 @@
+{
+    "name": "sqltable",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "sqlls",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "table": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "AzureSqlTable",
+        "schema": [
+            {
+                "name": "branch_id",
+                "type": "int",
+                "precision": 10
+            },
+            {
+                "name": "branch_country",
+                "type": "varchar"
+            },
+            {
+                "name": "branch_city",
+                "type": "varchar"
+            }
+        ],
+        "typeProperties": {
+            "schema": "dbo",
+            "table": {
+                "value": "@dataset().table",
+                "type": "Expression"
+            }
+        }
+    }
+}
