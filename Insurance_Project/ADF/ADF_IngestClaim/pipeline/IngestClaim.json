@@ -1,0 +1,219 @@
+{
+    "name": "IngestClaim",
+    "properties": {
+        "activities": [
+            {
+                "name": "Process the incremental records",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "Get latest hwm from txt",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderQuery": {
+                            "value": "select * from dbo.Claim Claims where Claims.LastUpdatedTimeStamp>'@{activity('Get latest hwm from txt').output.value[0].Prop_0}' AND Claims.LastUpdatedTimeStamp<='@{activity('Get lastupdt timestamp from Claim table').output.firstRow.latesttime}'",
+                            "type": "Expression"
+                        },
+                        "queryTimeout": "02:00:00",
+                        "partitionOption": "None"
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".txt"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "sqltable",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "table": "Claim"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "adlscsv",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "folder": "Claim"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Updt hwm till the last processed record",
+                "type": "Copy",
+                "dependsOn": [
+                    {
+                        "activity": "Process the incremental records",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderQuery": {
+                            "value": "@{activity('Get lastupdt timestamp from Claim table').output.firstRow.latesttime}",
+                            "type": "Expression"
+                        },
+                        "queryTimeout": "02:00:00",
+                        "partitionOption": "None"
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".txt"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator",
+                        "typeConversion": true,
+                        "typeConversionSettings": {
+                            "allowDataTruncation": true,
+                            "treatBooleanAsNumber": false
+                        }
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "sqltable",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "table": "Claim"
+                        }
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "rwCSV",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "filesystem": "landing",
+                            "dir": "Claim",
+                            "filename": "HighWaterMark_Claim.txt"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Get lastupdt timestamp from Claim table",
+                "type": "Lookup",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "AzureSqlSource",
+                        "sqlReaderQuery": "select max(LastUpdatedTimeStamp) as latesttime from dbo.Claim;",
+                        "queryTimeout": "02:00:00",
+                        "partitionOption": "None"
+                    },
+                    "dataset": {
+                        "referenceName": "sqltable",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "table": "Claim"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "Get latest hwm from txt",
+                "type": "Lookup",
+                "dependsOn": [
+                    {
+                        "activity": "Get lastupdt timestamp from Claim table",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "DelimitedTextSource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": true,
+                            "enablePartitionDiscovery": false
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextReadSettings"
+                        }
+                    },
+                    "dataset": {
+                        "referenceName": "rwCSV",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "filesystem": "landing",
+                            "dir": "Claim",
+                            "filename": "HighWaterMark_Claim.txt"
+                        }
+                    },
+                    "firstRowOnly": false
+                }
+            }
+        ],
+        "annotations": []
+    }
+}
